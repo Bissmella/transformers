@@ -128,7 +128,7 @@ class BeitEmbeddings(nn.Module):
         - https://github.com/facebookresearch/dino/blob/de9ee3df6cf39fac952ab558447af1fa1365362a/vision_transformer.py#L174-L194, and
         - https://github.com/facebookresearch/dinov2/blob/e1277af2ba9496fbadf7aec6eba56e8d882d1e35/dinov2/models/vision_transformer.py#L179-L211
         """
-        a = 1
+
         num_patches = embeddings.shape[1] - 1
         num_positions = self.position_embeddings.shape[1] - 1
 
@@ -157,7 +157,6 @@ class BeitEmbeddings(nn.Module):
 
         patch_pos_embed = patch_pos_embed.permute(0, 2, 3, 1).view(1, -1, dim)
 
-        b = 2
         return torch.cat((class_pos_embed, patch_pos_embed), dim=1)
 
     def forward(
