@@ -276,11 +276,15 @@ class LagunaSparseMoeBlock(Qwen3MoeSparseMoeBlock):
         hidden_states = hidden_states.reshape(batch_size, sequence_length, hidden_dim)
         return hidden_states
 
-def _no_inherit_decorators(cls):
-    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+def _suppress_inherited_kernelize(cls):
+    """No-op marker: prevents the modular converter from inheriting
+    `@use_kernelized_func` from the parent. This class overrides
+    `apply_rotary_pos_emb` with a version that has no matching hub kernel,
+    so the inherited decorator would crash `kernelize()`. See #46399.
+    """
     return cls
 
-@_no_inherit_decorators
+@_suppress_inherited_kernelize
 class LagunaAttention(AfmoeAttention):
     """Afmoe-style SWA/GQA attention with Laguna-specific gating and per-layer head count."""
 

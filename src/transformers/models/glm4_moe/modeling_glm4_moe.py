@@ -29,7 +29,7 @@ from ... import initialization as init
 from ...activations import ACT2FN
 from ...cache_utils import Cache, DynamicCache
 from ...generation import GenerationMixin
-from ...integrations import use_experts_implementation, use_kernel_forward_from_hub, use_kernelized_func
+from ...integrations import use_experts_implementation, use_kernel_forward_from_hub
 from ...masking_utils import create_causal_mask
 from ...modeling_flash_attention_utils import FlashAttentionKwargs
 from ...modeling_layers import GradientCheckpointingLayer
@@ -190,7 +190,16 @@ def apply_rotary_pos_emb(q, k, cos, sin, unsqueeze_dim=1):
     return q_embed, k_embed
 
 
-@use_kernelized_func(apply_rotary_pos_emb)
+def _suppress_inherited_kernelize(cls):
+    """No-op marker: prevents the modular converter from inheriting
+    `@use_kernelized_func` from the parent. This class overrides
+    `apply_rotary_pos_emb` with a version that has no matching hub kernel,
+    so the inherited decorator would crash `kernelize()`. See #46399.
+    """
+    return cls
+
+
+@_suppress_inherited_kernelize
 class Glm4MoeAttention(nn.Module):
     """Multi-headed attention from 'Attention Is All You Need' paper"""
 

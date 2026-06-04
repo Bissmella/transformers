@@ -29,7 +29,7 @@ from ... import initialization as init
 from ...activations import ACT2FN
 from ...cache_utils import Cache, DynamicCache
 from ...generation import GenerationMixin
-from ...integrations import use_experts_implementation, use_kernel_forward_from_hub, use_kernelized_func
+from ...integrations import use_experts_implementation, use_kernel_forward_from_hub
 from ...masking_utils import create_causal_mask, create_sliding_window_causal_mask
 from ...modeling_flash_attention_utils import FlashAttentionKwargs
 from ...modeling_layers import GradientCheckpointingLayer
@@ -337,7 +337,16 @@ def eager_attention_forward(
     return attn_output, attn_weights
 
 
-@use_kernelized_func(apply_rotary_pos_emb)
+def _suppress_inherited_kernelize(cls):
+    """No-op marker: prevents the modular converter from inheriting
+    `@use_kernelized_func` from the parent. This class overrides
+    `apply_rotary_pos_emb` with a version that has no matching hub kernel,
+    so the inherited decorator would crash `kernelize()`. See #46399.
+    """
+    return cls
+
+
+@_suppress_inherited_kernelize
 class LagunaAttention(nn.Module):
     """Afmoe-style SWA/GQA attention with Laguna-specific gating and per-layer head count."""
 

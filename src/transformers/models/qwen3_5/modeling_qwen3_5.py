@@ -32,7 +32,6 @@ from ... import initialization as init
 from ...activations import ACT2FN
 from ...cache_utils import Cache, DynamicCache
 from ...generation import GenerationMixin
-from ...integrations import use_kernelized_func
 from ...masking_utils import create_causal_mask
 from ...modeling_flash_attention_utils import FlashAttentionKwargs
 from ...modeling_layers import (
@@ -642,7 +641,16 @@ def eager_attention_forward(
     return attn_output, attn_weights
 
 
-@use_kernelized_func(apply_rotary_pos_emb)
+def _suppress_inherited_kernelize(cls):
+    """No-op marker: prevents the modular converter from inheriting
+    `@use_kernelized_func` from the parent. This class overrides
+    `apply_rotary_pos_emb` with a version that has no matching hub kernel,
+    so the inherited decorator would crash `kernelize()`. See #46399.
+    """
+    return cls
+
+
+@_suppress_inherited_kernelize
 class Qwen3_5Attention(nn.Module):
     """Multi-headed attention from 'Attention Is All You Need' paper"""
 

@@ -127,11 +127,15 @@ class Glm4MoeConfig(PreTrainedConfig):
 class Glm4MoeRotaryEmbedding(GlmRotaryEmbedding):
     pass
 
-def _no_inherit_decorators(cls):
-    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+def _suppress_inherited_kernelize(cls):
+    """No-op marker: prevents the modular converter from inheriting
+    `@use_kernelized_func` from the parent. This class overrides
+    `apply_rotary_pos_emb` with a version that has no matching hub kernel,
+    so the inherited decorator would crash `kernelize()`. See #46399.
+    """
     return cls
 
-@_no_inherit_decorators
+@_suppress_inherited_kernelize
 class Glm4MoeAttention(CohereAttention):
     def __init__(self, config: Glm4MoeConfig, layer_idx: int | None = None):
         nn.Module.__init__(self)
