@@ -139,7 +139,11 @@ class Glm4vMoeConfig(Glm4vConfig):
     image_token_id: int = 151363
     video_token_id: int = 151364
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class Glm4vMoeTextAttention(Glm4Attention):
     def __init__(self, config: Glm4vMoeTextConfig, layer_idx: int | None = None):
         super().__init__(config, layer_idx)

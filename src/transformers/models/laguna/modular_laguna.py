@@ -276,7 +276,11 @@ class LagunaSparseMoeBlock(Qwen3MoeSparseMoeBlock):
         hidden_states = hidden_states.reshape(batch_size, sequence_length, hidden_dim)
         return hidden_states
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class LagunaAttention(AfmoeAttention):
     """Afmoe-style SWA/GQA attention with Laguna-specific gating and per-layer head count."""
 

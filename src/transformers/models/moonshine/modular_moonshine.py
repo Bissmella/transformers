@@ -188,7 +188,11 @@ class MoonshineDecoderMLP(nn.Module):
 class MoonshineRotaryEmbedding(GlmRotaryEmbedding):
     pass
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class MoonshineAttention(GlmAttention):
     def __init__(
         self,

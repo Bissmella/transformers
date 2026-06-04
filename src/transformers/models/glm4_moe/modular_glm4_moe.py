@@ -127,7 +127,11 @@ class Glm4MoeConfig(PreTrainedConfig):
 class Glm4MoeRotaryEmbedding(GlmRotaryEmbedding):
     pass
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class Glm4MoeAttention(CohereAttention):
     def __init__(self, config: Glm4MoeConfig, layer_idx: int | None = None):
         nn.Module.__init__(self)

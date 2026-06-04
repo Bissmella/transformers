@@ -333,7 +333,11 @@ class Qwen3_5GatedDeltaNet(Qwen3NextGatedDeltaNet):
         output = self.out_proj(core_attn_out)
         return output
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class Qwen3_5Attention(Qwen3NextAttention):
     pass
 

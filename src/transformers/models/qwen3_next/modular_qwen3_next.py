@@ -129,7 +129,11 @@ class Qwen3NextRotaryEmbedding(Gemma2RotaryEmbedding):
 class Qwen3NextRMSNorm(Gemma3RMSNorm):
     pass
 
+def _no_inherit_decorators(cls):
+    """Marker decorator to prevent modular converter from inheriting parent decorators."""
+    return cls
 
+@_no_inherit_decorators
 class Qwen3NextAttention(Qwen3MoeAttention):
     def __init__(self, config: Qwen3NextConfig, layer_idx: int):
         super().__init__(config, layer_idx)
